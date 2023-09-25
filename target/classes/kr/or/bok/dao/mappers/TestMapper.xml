@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.bok.dao.mappers.TestMapper">
+	<parameterMap type="java.util.Map" id="map"></parameterMap>
+	
+	<select id="selectTest" resultType="categoryPrefixVO">
+		SELECT	/*SQL_ID: kr.or.bok.dao.mappers.TestMapper.selectTest */
+					CATEGORY_PREFIX
+				,	CATEGORY_PREFIX_DESC
+				,	DOC
+				, 	DOM
+				,	IS_CODE
+		FROM 	RITUS_CATEGORY_PREFIX
+	</select>
+
+</mapper>

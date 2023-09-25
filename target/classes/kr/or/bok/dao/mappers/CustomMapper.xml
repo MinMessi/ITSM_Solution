@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.bok.dao.mappers.CustomMapper">
+	<parameterMap type="java.util.Map" id="map"></parameterMap>
+	
+	<select id="selectHumanCountByCompany" resultType="humanCountByCompanyVO">
+		SELECT	/*SQL_ID: kr.or.bok.dao.mappers.CustomMapper.selectHumanCountByCompany */
+  					CODE_CD AS COMPANY_CD
+  				, 	MAX(CODE_VALUE) AS COMPANY
+  				, 	COUNT(DATA_ID) AS CNT
+		FROM 	(
+						SELECT 	CODE_CD
+    							, 	CODE_VALUE
+    							,	DATA_ID
+  						FROM 	CDV_ITO_COMPANY IC LEFT OUTER JOIN V_ITO_PROFILE IP
+  						ON 		IC.CODE_CD = IP.ITO_COMPANY
+					)
+		GROUP 	BY CODE_CD
+	</select>
+
+</mapper>

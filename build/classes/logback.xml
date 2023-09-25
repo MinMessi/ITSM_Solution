@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- configuration file for LogBack (slf4J implementation)
+See here for more details: http://gordondickens.com/wordpress/2013/03/27/sawing-through-the-java-loggers/ -->
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <!-- To enable JMX Management -->
+    <jmxConfigurator/>
+
+    <property resource="ritus/ritus.${ritus.mode}.properties" />
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  		<file>${ritus.log.path}/ritus_system.log</file>
+  		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+    	<!-- rollover daily -->
+    		<fileNamePattern>${ritus.log.path}/ritus_system-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+    		<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+	      		<maxFileSize>5MB</maxFileSize>
+    		</timeBasedFileNamingAndTriggeringPolicy>
+  		</rollingPolicy>
+  		<encoder>
+    		<pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level %logger{36} - %msg%n</pattern>
+  		</encoder>
+	</appender>
+
+	<if condition='property("ritus.mode").equals("DEV")'>
+		<then>
+			<!-- Application Loggers -->
+			<logger name="ritus" level="DEBUG" />
+
+			<!-- log SQL (pre-execution) plus exceptions caused by SQL -->
+			<logger name="jdbc.sqltiming" level="ERROR" />
+			<logger name="jdbc.audit" level="INFO" />
+			<logger name="jdbc.resultsettable" level="ERROR" />
+
+			<root level="ERROR">
+		        <appender-ref ref="console"/>
+		        <appender-ref ref="ROLLING" />
+		    </root>
+		</then>
+		<else>
+			<!-- Application Loggers -->
+			<logger name="ritus" level="INFO" />
+
+			<!-- log SQL (pre-execution) plus exceptions caused by SQL -->
+			<logger name="jdbc.sqltiming" level="ERROR" />
+			<logger name="jdbc.audit" level="ERROR" />
+			<logger name="jdbc.resultsettable" level="ERROR" />
+
+			<root level="ERROR">
+		        <appender-ref ref="console"/>
+		        <appender-ref ref="ROLLING" />
+		    </root>
+		</else>
+	</if>
+</configuration>

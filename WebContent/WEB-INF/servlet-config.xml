@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc
+				http://www.springframework.org/schema/mvc/spring-mvc.xsd
+				http://www.springframework.org/schema/beans
+				http://www.springframework.org/schema/beans/spring-beans.xsd
+				http://www.springframework.org/schema/context
+				http://www.springframework.org/schema/context/spring-context.xsd
+				http://www.springframework.org/schema/util
+      			http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+	<context:annotation-config />
+
+	<context:component-scan base-package="ritus" />
+	<context:component-scan base-package="kr.or.bok" />
+
+    <!-- Configurations for Datasource and Transaction Manager -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:ritus/ritus.${ritus.mode}.properties"/>
+		<property name="fileEncoding" value="UTF-8"/>
+	</bean>
+
+	<!-- @ResponseBody로 String 처리할 때 한글 깨짐 방지 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>application/json;charset=UTF-8</value>
+						<value>text/html;charset=UTF-8</value>
+						<value>text/plain;charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
+	<mvc:interceptors>
+		<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<property name="paramName" value="lang" />
+		</bean>
+	</mvc:interceptors>
+
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="contentNegotiationManager">
+    		<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+				<property name="mediaTypes">
+					<value>
+						xml=application/rss+xml
+						htm=text/html;charset=UTF-8
+						html=text/html;charset=UTF-8
+						ajax=text/html;charset=UTF-8
+						scr=application/x-javascript;charset=UTF-8
+						json=application/json;charset=UTF-8
+						jsonp=application/javascript;charset=UTF-8
+						xml=application/xml;charset=UTF-8
+						do=text/html;charset=UTF-8
+					</value>
+				</property>
+			</bean>
+    	</property>
+ 		<property name="viewResolvers">
+ 			<list>
+ 				<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+
+ 				<bean class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">
+ 					<property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+ 				</bean>
+
+ 				<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="prefix" value="/WEB-INF/views/" />
+					<property name="suffix" value=".jsp" />
+				</bean>
+ 			</list>
+ 		</property>
+
+ 		<property name="defaultViews">
+			<list>
+				<bean id="jsonHttpMessageConverter" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+			</list>
+ 		</property>
+ 	</bean>
+
+ 	<!-- MultipartResolver 설정 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1073741824" />
+        <property name="maxInMemorySize" value="1073741824" />
+    </bean>
+
+ 	<!-- TilesConfigurer -->
+	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions" value="classpath:tiles/tiles.xml"/>
+	</bean>
+
+</beans>

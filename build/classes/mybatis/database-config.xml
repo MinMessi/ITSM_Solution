@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "HTTP://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <setting name="cacheEnabled" value="true" />
+        <setting name="lazyLoadingEnabled" value="false" />
+        <setting name="multipleResultSetsEnabled" value="true" />
+        <setting name="defaultExecutorType" value="REUSE" />
+    </settings>
+
+    <typeAliases>
+    	<typeAlias type="ritus.dao.vos.VOCommon" alias="voCommon" />
+		<typeAlias type="ritus.dao.vos.CategoryVO" alias="categoryVO" />
+		<typeAlias type="ritus.dao.vos.CategoryRenameVO" alias="categoryRenameVO" />
+		<typeAlias type="ritus.dao.vos.CategoryPrefixVO" alias="categoryPrefixVO" />
+		<typeAlias type="ritus.dao.vos.LoginUserVO" alias="loginUserVO" />
+		<typeAlias type="ritus.dao.vos.ViewFieldsVO" alias="viewFieldsVO" />
+		<typeAlias type="ritus.dao.vos.CategoryFieldVO" alias="categoryFieldVO" />
+		<typeAlias type="ritus.dao.vos.CategoryFieldTypeVO" alias="categoryFieldTypeVO" />
+		<typeAlias type="ritus.dao.vos.DataVO" alias="dataVO" />
+		<typeAlias type="ritus.dao.vos.PageVO" alias="pageVO" />
+		<typeAlias type="ritus.dao.vos.PortletVO" alias="portletVO" />
+		<typeAlias type="ritus.dao.vos.PagePortletVO" alias="pagePortletVO" />
+		<typeAlias type="ritus.dao.vos.SetPortletVO" alias="setPortletVO" />
+		<typeAlias type="ritus.dao.vos.BatchVO" alias="batchVO" />
+		<typeAlias type="ritus.dao.vos.FileVO" alias="fileVO" />
+		
+		<typeAlias type="kr.or.bok.ui.data.hr.HumanCountByCompanyVO" alias="humanCountByCompanyVO" />
+    </typeAliases>
+
+	<!-- plugins>
+		<plugin interceptor="ritus.dao.interceptor.AddColumn" />
+	</plugins -->
+</configuration>

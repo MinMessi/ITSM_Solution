@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                           http://cxf.apache.org/jaxws
+                           http://cxf.apache.org/schemas/jaxws.xsd
+                           http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+
+    <!-- Uncomment and add your base-package here:
+         <context:component-scan
+            base-package="org.springframework.samples.service"/>  -->
+
+	<context:annotation-config />
+
+	<context:component-scan base-package="ritus" />
+	<context:component-scan base-package="kr.or.bok" />
+	
+	<mybatis:scan base-package="kr.or.bok.dao.mappers" />
+
+	<!-- Configurations for Datasource and Transaction Manager -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:ritus/ritus.${ritus.mode}.properties"/>
+	</bean>
+
+	<!-- JEUS JNDI Info -->
+	<bean id="dataSourceSpied" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/ritusDB" />
+	</bean>
+
+	<bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+    	<constructor-arg ref="dataSourceSpied"/>
+    	<property name="logFormatter" ref="CustomlogFormatter"/>
+    </bean>
+
+    <bean id="CustomlogFormatter" class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+   		<property name="loggingType" value="MULTI_LINE"/>
+		<property name="sqlPrefix" value="SQL:::"/>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- define the SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:mybatis/database-config.xml" />
+    </bean>
+
+    <!-- scan for mappers and let them be autowired -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="ritus.dao.mappers" />
+    </bean>
+
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+        <constructor-arg ref="sqlSessionFactory" />
+    </bean>
+
+    <!-- Configurations for Aspects -->
+   <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*"      propagation="REQUIRED" read-only="true" />
+            <tx:method name="list*"     propagation="REQUIRED" read-only="true" />
+            <tx:method name="add*"      propagation="REQUIRED" />
+            <tx:method name="update*"   propagation="REQUIRED" />
+            <tx:method name="delete*"   propagation="REQUIRED" />
+            <tx:method name="execute*"  propagation="REQUIRED" />
+            <tx:method name="touch*"    propagation="REQUIRED" />
+            <tx:method name="increase*" propagation="REQUIRED" />
+            <tx:method name="decrease*" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- Batch -->
+    <bean id="ritusDefaultJob" class="ritus.batch.RitusDefaultBatch" />
+
+	<bean id="ritusDefaultJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+	    <property name="jobClass" value="ritus.batch.RitusDefaultBatch"/>
+	    <property name="applicationContextJobDataKey" value="applicationContext"/>
+	</bean>
+
+	<bean id="cronTriggerRitusDefaultJob" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	    <property name="jobDetail" ref="ritusDefaultJobDetail"/>
+	    <property name="cronExpression" value="0 0 */1 * * ?"/>
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	    <property name="triggers">
+	        <list>
+	            <ref bean="cronTriggerRitusDefaultJob"/>
+	        </list>
+	    </property>
+	    <property name="quartzProperties">
+	        <props>
+	            <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+	            <prop key="org.quartz.threadPool.threadCount">3</prop>
+	            <prop key="org.quartz.threadPool.threadPriority">4</prop>
+	            <prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
+	            <prop key="org.quartz.jobStore.misfireThreshold">60000</prop>
+	        </props>
+	    </property>
+	</bean>
+
+</beans>

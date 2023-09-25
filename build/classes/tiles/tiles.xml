@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	<definition name="defaultLayout" template="/WEB-INF/tiles/layout/layout.jsp">
+		<put-attribute name="head" value="/WEB-INF/tiles/head.jsp" />
+		<put-attribute name="nav" value="/WEB-INF/tiles/nav.jsp" />
+		<put-attribute name="sub_nav" value="/WEB-INF/tiles/sub_nav.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp" />
+ 	</definition>
+
+ 	<definition name="adminPageLayout" template="/WEB-INF/tiles/layout/layout.jsp">
+		<put-attribute name="head" value="/WEB-INF/views/admin/tiles/head.jsp" />
+		<put-attribute name="nav" value="/WEB-INF/views/admin/tiles/nav.jsp" />
+		<put-attribute name="sub_nav" value="/WEB-INF/views/admin/tiles/sub_nav.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp" />
+ 	</definition>
+
+ 	<definition name="loginLayout" template="/WEB-INF/tiles/layout/loginLayout.jsp">
+		<put-attribute name="head" value="/WEB-INF/tiles/head.jsp" />
+ 	</definition>
+
+ 	<definition name="surveyLayout" template="/WEB-INF/tiles/layout/surveyLayout.jsp">
+		<put-attribute name="head" value="/WEB-INF/tiles/surveyHead.jsp" />
+ 	</definition>
+
+ 	<definition name="page/error/*" template="/WEB-INF/tiles/layout/errorLayout.jsp">
+ 		<put-attribute name="content" value="/WEB-INF/views/page/error/{1}.jsp" />
+ 	</definition>
+
+ 	<definition name="page/survey/*" extends="surveyLayout">
+ 		<put-attribute name="content" value="/WEB-INF/views/page/survey/{1}.jsp" />
+ 	</definition>
+
+ 	<definition name="page/sso/login" extends="loginLayout">
+ 		<put-attribute name="content" value="/WEB-INF/views/common/page/sso/login.jsp" />
+ 	</definition>
+
+ 	<definition name="page/html/*" template="/WEB-INF/tiles/layout/simpleLayout.jsp">
+ 		<put-attribute name="content" value="/WEB-INF/views/page/html/{1}.jsp" />
+ 	</definition>
+
+ 	<definition name="page/**" extends="defaultLayout">
+ 		<put-attribute name="content" value="/WEB-INF/views/page/{1}.jsp" />
+ 	</definition>
+
+ 	<definition name="admin/page/**" extends="adminPageLayout">
+ 		<put-attribute name="content" value="/WEB-INF/views/admin/page/{1}.jsp" />
+ 	</definition>
+ 	
+ 	<definition name="portlet/**" template="/WEB-INF/tiles/layout/portletLayout.jsp">
+ 		<put-attribute name="content" value="/WEB-INF/views/portlet/{1}.jsp" />
+ 	</definition>
+</tiles-definitions>
+
