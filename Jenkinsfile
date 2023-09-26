@@ -1,10 +1,10 @@
-def IMG = "192.168.100.12/sellers/sellers:v-"
+def IMG = "192.168.100.12/ritus-total/ritus-total:v-"
 def KC = "/usr/local/bin/kubectl --kubeconfig=/home/jenkins/acloud-client.conf"
 
 pipeline {
   
   environment {
-    registry = "lee-code712/sellers"
+    registry = "MinMessi/ritus-total"
     dockerImage = "${IMG}${BUILD_NUMBER}"
   }
   agent any
@@ -13,7 +13,7 @@ pipeline {
     stage('Checkout') {
       steps {
         echo "Checkout Source START"
-        git branch: 'main', url: 'https://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@github.com/lee-code712/sellers.git'
+        git branch: 'main', url: 'https://github.com/MinMessi/ritus-total.git'
         echo "Checkout Source END"
       }
     }
@@ -46,45 +46,45 @@ pipeline {
       steps {
         script {
          echo "Create Deployment.yaml"
-         writeFile file: 'sellers-deployment.yaml', text: """
+         writeFile file: 'ritus-total-deployment.yaml', text: """
          apiVersion: apps/v1
          kind: Deployment
          metadata:
-           name: sellers
-           namespace: sellers
+           name: ritus-total
+           namespace: ritus-total
          spec:
            replicas: 1
            selector:
              matchLabels:
-               app: sellers
+               app: ritus-total
                version: v1
            template:
              metadata:
                annotations:
                  sidecar.istio.io/inject: 'true'
                labels:
-                 app: sellers
+                 app: ritus-total
                  version: v1
              spec:
                restartPolicy: Always
                containers:
-                 - name: sellers
+                 - name: ritus-total
                    image: ${dockerImage}
                    ports:
-                     - containerPort: 8000
+                     - containerPort: 8088
                        protocol: TCP
          """
          echo "Create Deployment.yaml END"
         }
         script {
           echo "Delete Existing Deployment"
-          sh "${KC} delete deployment sellers -n sellers"
+          sh "${KC} delete deployment ritus-total -n ritus-total"
           echo "Delete END"
         }
         script {
           echo "Deploy App Start"
-          sh "${KC} create -f sellers-deployment.yaml"
-          sh "${KC} set image deployment/sellers sellers=${dockerImage} -n sellers"
+          sh "${KC} create -f ritus-total-deployment.yaml"
+          sh "${KC} set image deployment/ritus-total ritus-total=${dockerImage} -n ritus-total"
           echo "Deploy App END"
         }
       }
