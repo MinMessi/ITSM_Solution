@@ -24,7 +24,7 @@ RUN mvn clean install
 # # WAR 파일을 Tomcat의 webapps 디렉토리로 복사합니다.
 # RUN cp target/ritus-total-1.0.0-BUILD-SNAPSHOT.war /app/ritus-tomcat/webapps/ROOT.war
 
-
+RUN mkdir -p /app/ritus-tomcat
 RUN chmod -R 755 /app/ritus-tomcat
 
 WORKDIR /app/ritus-tomcat
